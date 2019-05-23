@@ -30,7 +30,8 @@ shift
 SLAVES=$*
 
 ONAP_BRANCH=${ONAP_BRANCH:-'casablanca'}
-KUBESPRAY_COMMIT="v2.10.0"
+KUBESPRAY_VERSION="v2.10.0"
+ANSIBLE_VERSION=2.7.9
 NAMESPACE='onap'
 SSH_USER=${SSH_USER:-"opnfv"}
 SSH_OPTIONS='-o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no'
@@ -163,10 +164,11 @@ EOL
 
 # install K8S cluster by kubespray
 sudo apt-get -y update
-sudo apt-get -y install git ansible python-jinja2 python3-pip libffi-dev libssl-dev
+sudo apt-get -y install git python-jinja2 python3-pip libffi-dev libssl-dev
 git clone https://github.com/kubernetes-incubator/kubespray.git
 cd kubespray
-git checkout $KUBESPRAY_COMMIT
+git checkout $KUBESPRAY_VERSION
+pip3 install ansible==$ANSIBLE_VERSION
 pip3 install -r requirements.txt
 export CONFIG_FILE=inventory/auto_hosts.yml
 rm $CONFIG_FILE
