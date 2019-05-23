@@ -231,6 +231,8 @@ kubectl create clusterrolebinding tiller --clusterrole cluster-admin --serviceac
 rm -rf oom
 echo "pulling new oom"
 git clone -b $ONAP_BRANCH http://gerrit.onap.org/r/oom
+# AAI helm charts were moved to separate repository => init submodules
+git submodule update --init --recursive
 
 # NFS FIX for aaf-locate
 sed -i '/persistence:/s/^#//' ./oom/kubernetes/aaf/charts/aaf-locate/values.yaml
