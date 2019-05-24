@@ -234,6 +234,8 @@ EOF
 kubectl get namespaces --show-labels
 kubectl -n kube-system create sa tiller
 kubectl create clusterrolebinding tiller --clusterrole cluster-admin --serviceaccount=kube-system:tiller
+kubectl create clusterrolebinding default-admin --clusterrole cluster-admin --serviceaccount=$NAMESPACE:default
+
 rm -rf oom
 echo "pulling new oom"
 git clone -b $ONAP_BRANCH http://gerrit.onap.org/r/oom
