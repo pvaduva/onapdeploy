@@ -53,7 +53,7 @@ case "$ONAP_BRANCH" in
         HELM_VERSION=2.9.1
         ;;
     *)
-        HELM_VERSION=2.9.1
+        HELM_VERSION=2.12.3
         ;;
 esac
 
