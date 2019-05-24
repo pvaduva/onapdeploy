@@ -30,8 +30,6 @@ shift
 SLAVES=$*
 
 ONAP_BRANCH=${ONAP_BRANCH:-'casablanca'}
-KUBESPRAY_VERSION="v2.10.0"
-ANSIBLE_VERSION=2.7.9
 NAMESPACE='onap'
 SSH_USER=${SSH_USER:-"opnfv"}
 SSH_OPTIONS='-o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no'
@@ -48,12 +46,18 @@ TMP_DEP_LIST='/tmp/onap_pod_list.txt'
 case "$ONAP_BRANCH" in
     "beijing")
         HELM_VERSION=2.8.2
+        KUBESPRAY_VERSION="bbfd2dc2bd088efc63747d903edd41fe692531d8"
+        ANSIBLE_VERSION=2.7.9
         ;;
     "casablanca")
         HELM_VERSION=2.9.1
+        KUBESPRAY_VERSION="bbfd2dc2bd088efc63747d903edd41fe692531d8"
+        ANSIBLE_VERSION=2.7.9
         ;;
     *)
         HELM_VERSION=2.12.3
+        KUBESPRAY_VERSION="v2.10.0"
+        ANSIBLE_VERSION=2.7.9
         ;;
 esac
 
