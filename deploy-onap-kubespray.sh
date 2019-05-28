@@ -279,6 +279,7 @@ echo "Waiting for helm setup for 5 min at \$(date)"
 sleep 5m
 helm version
 helm repo add local http://127.0.0.1:8879
+helm repo remove stable
 helm repo list
 make all
 if ( ! helm install local/onap -n dev --namespace $NAMESPACE) ; then
