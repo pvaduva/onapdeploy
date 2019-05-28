@@ -281,6 +281,7 @@ helm version
 helm repo add local http://127.0.0.1:8879
 helm repo remove stable
 helm repo list
+cp -R helm/plugins/ ~/.helm
 make all
 if ( ! helm install local/onap -n dev --namespace $NAMESPACE) ; then
     echo "ONAP installation has failed at \$(date)"
