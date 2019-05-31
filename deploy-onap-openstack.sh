@@ -170,7 +170,7 @@ openstack security group rule create  --proto tcp \
     --dst-port 443:443 onap_security_group
 
 # Allow communication between k8s cluster nodes
-PUBLIC_NET=`openstack subnet list --name public_subnet -f value -c Subnet`
+PUBLIC_NET=`openstack subnet list --name public-subnet -f value -c Subnet`
 openstack security group rule create --remote-ip $PUBLIC_NET --proto tcp \
     --dst-port 1:65535 onap_security_group
 openstack security group rule create --remote-ip $PUBLIC_NET --proto udp \
