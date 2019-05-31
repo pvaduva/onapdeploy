@@ -21,15 +21,17 @@
 #
 # Configuration
 #
+set -x
+
 export LC_ALL=C
-export LANG=C
+export LANG=$LC_ALL
 
 MASTER=$1
 SERVERS=$*
 shift
 SLAVES=$*
 
-ONAP_BRANCH=${ONAP_BRANCH:-'casablanca'}
+ONAP_BRANCH=${ONAP_BRANCH:-'master'}
 NAMESPACE='onap'
 SSH_USER=${SSH_USER:-"opnfv"}
 SSH_OPTIONS='-o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no'
@@ -108,7 +110,7 @@ EOL
 # Check if server IPs of kubernetes nodes are configured at given server.
 # If it is not the case, then kubespray invetory file must be updated.
 function check_server_ips() {
-    for SERVER_IP in $(grep 'ip=' $1 | sed -re 's/^.*ip=([0-9\.]+).*$/\1/') ; do
+    for SERVER_IP in $(grep '^ *ip: ' inventory/auto_hosts.yml | sed -re 's/^ *ip: ([0-9\.]+).*$/\1/') ; do
         IP_OK="false"
         for IP in $(ssh $SSH_OPTIONS $SSH_USER@$SERVER_IP "ip a | grep -Ew 'inet' | sed -re 's/^ *inet ([0-9\.]+).*$/\1/g'") ; do
             if [ "$IP" == "$SERVER_IP" ] ; then

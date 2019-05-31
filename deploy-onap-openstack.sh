@@ -14,12 +14,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Script for automated deployment of ONAP on top of OPNFV Fuel/MCP installation
-# In the future both OOM and heat install methods should be supported.
-# At the beginning OOM will be used for simplification.
+# Script for automated deployment of ONAP on top of OpenStack installation.
 
 # TODO:
 #   Configure ONAP to be able to control underlying OpenStack
+
+set -x
+
+export LC_ALL=C
+export LANG=$LC_ALL
 
 # Configuration to be passed to ci/deploy-onap.sh
 export SSH_USER="ubuntu"
@@ -33,6 +36,7 @@ $OS_HYPER_CMD
 DEFAULT_CMP_COUNT=$($OS_HYPER_CMD -f value -c "ID" | wc -l)
 DEFAULT_CMP_MIN_MEM=$($OS_HYPER_CMD -f value -c "Memory MB" | sort | head -n1)
 DEFAULT_CMP_MIN_CPUS=$($OS_HYPER_CMD -f value -c "vCPUs" | sort | head -n1)
+DEFAULT_CMP_MIN_STORAGE=300
 
 # Use default values if compute configuration was not set by FUEL installer
 SCRIPT_DIR=${SCRIPT_DIR:-"."}
@@ -41,7 +45,7 @@ CMP_COUNT=${CMP_COUNT:-$DEFAULT_CMP_COUNT}          # number of compute nodes
 CMP_MIN_MEM=${CMP_MIN_MEM:-$DEFAULT_CMP_MIN_MEM}    # MB RAM of the weakest compute node
 CMP_MIN_CPUS=${CMP_MIN_CPUS:-$DEFAULT_CMP_MIN_CPUS} # CPU count of the weakest compute node
 # size of storage for instances
-CMP_STORAGE_TOTAL=${CMP_STORAGE_TOTAL:-$((80*$CMP_COUNT))}
+CMP_STORAGE_TOTAL=${CMP_STORAGE_TOTAL:-$(($DEFAULT_CMP_MIN_STORAGE*$CMP_COUNT))}
 VM_COUNT=${VM_COUNT:-6}             # number of VMs available for k8s cluster
 
 #
@@ -147,7 +151,7 @@ openstack subnet create onap_private_subnet --network onap_private_network \
     --subnet-range 192.168.33.0/24 --ip-version 4 --dhcp --dns-nameserver "8.8.8.8"
 openstack router create onap_router
 openstack router add subnet onap_router onap_private_subnet
-openstack router set onap_router --external-gateway floating_net
+openstack router set onap_router --external-gateway public
 
 # Allow selected ports and protocols
 openstack security group create onap_security_group
@@ -166,7 +170,7 @@ openstack security group rule create  --proto tcp \
     --dst-port 443:443 onap_security_group
 
 # Allow communication between k8s cluster nodes
-PUBLIC_NET=`openstack subnet list --name floating_subnet -f value -c Subnet`
+PUBLIC_NET=`openstack subnet list --name public_subnet -f value -c Subnet`
 openstack security group rule create --remote-ip $PUBLIC_NET --proto tcp \
     --dst-port 1:65535 onap_security_group
 openstack security group rule create --remote-ip $PUBLIC_NET --proto udp \
@@ -180,7 +184,7 @@ HOST_COUNT=$(echo ${HOST_NAME[@]} | wc -w)
 VM_ITER=1
 HOST_ITER=0
 while [ $VM_ITER -le $VM_COUNT ] ; do
-    openstack floating ip create floating_net
+    openstack floating ip create public
     VM_NAME[$VM_ITER]="onap_vm${VM_ITER}"
     VM_IP[$VM_ITER]=$(openstack floating ip list -c "Floating IP Address" \
         -c "Port" -f value | grep None | cut -f1 -d " " | head -n1)

@@ -16,6 +16,11 @@
 
 # Script for automated deployment of devstack at OPNFV LAAS environment
 #
+set -x
+
+export LC_ALL=C
+export LANG=$LC_ALL
+
 sudo apt -y update
 sudo apt -y install git
 sudo useradd -s /bin/bash -d /opt/stack -m stack
