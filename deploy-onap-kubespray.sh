@@ -219,7 +219,7 @@ echo "DEPLOYING OOM ON MASTER"
 echo "$MASTER"
 
 ssh $SSH_OPTIONS $SSH_USER@"$MASTER" "bash -s" <<OOMDEPLOY
-sudo su
+sudo -i 2> /dev/null
 apt-get install -y make
 echo "create namespace '$NAMESPACE'"
 cat <<EOF | kubectl create -f -
@@ -295,7 +295,6 @@ fi
 cd ../../
 
 echo "Waiting for ONAP deployments to be up \$(date)"
-echo "Ignore failure of sdnc-ansible-server, see SDNC-443"
 function get_onap_deployments() {
     kubectl get deployments --namespace $NAMESPACE > $TMP_DEP_LIST
     return \$(cat $TMP_DEP_LIST | wc -l)
