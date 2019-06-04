@@ -219,7 +219,7 @@ echo "DEPLOYING OOM ON MASTER"
 echo "$MASTER"
 
 ssh $SSH_OPTIONS $SSH_USER@"$MASTER" "bash -s" <<OOMDEPLOY
-sudo -i 2> /dev/null
+sudo su
 apt-get install -y make
 echo "create namespace '$NAMESPACE'"
 cat <<EOF | kubectl create -f -
@@ -296,7 +296,7 @@ cd ../../
 
 echo "Waiting for ONAP deployments to be up \$(date)"
 function get_onap_deployments() {
-    kubectl get deployments --namespace $NAMESPACE > $TMP_DEP_LIST
+    sudo -i kubectl get deployments --namespace $NAMESPACE > $TMP_DEP_LIST 2> /dev/null
     return \$(cat $TMP_DEP_LIST | wc -l)
 }
 FAILED_DEPS_LIMIT=0         # maximal number of failed ONAP deployemnts
