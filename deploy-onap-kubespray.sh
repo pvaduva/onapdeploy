@@ -205,7 +205,7 @@ for SLAVE in $SLAVES;
 do
 ssh $SSH_OPTIONS $SSH_USER@"$SLAVE" "bash -s" <<CONFIGURENFS &
     sudo su
-    apt-get install nfs-common -y
+    apt-get install -y nfs-common
     mkdir /dockerdata-nfs
     chmod 777 /dockerdata-nfs
     echo "$MASTER:/dockerdata-nfs /dockerdata-nfs   nfs    auto  0  0" >> /etc/fstab
@@ -220,6 +220,7 @@ echo "$MASTER"
 
 ssh $SSH_OPTIONS $SSH_USER@"$MASTER" "bash -s" <<OOMDEPLOY
 sudo su
+apt-get install -y make
 echo "create namespace '$NAMESPACE'"
 cat <<EOF | kubectl create -f -
 {
@@ -241,6 +242,7 @@ kubectl create clusterrolebinding default-admin --clusterrole cluster-admin --se
 rm -rf oom
 echo "pulling new oom"
 git clone -b $ONAP_BRANCH http://gerrit.onap.org/r/oom
+cd oom
 # AAI helm charts were moved to separate repository => init submodules
 git submodule update --init --recursive
 
@@ -254,7 +256,7 @@ wget https://jira.onap.org/secure/attachment/11261/prepull_docker.sh
 chmod 777 prepull_docker.sh
 ./prepull_docker.sh
 echo "starting onap deployments"
-cd oom/kubernetes/
+cd kubernetes/
 
 # Enable selected ONAP components
 if [ -n "$ONAP_COMPONENT" ] ; then
