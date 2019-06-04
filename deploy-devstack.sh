@@ -25,16 +25,15 @@ sudo apt -y update
 sudo apt -y install git
 sudo useradd -s /bin/bash -d /opt/stack -m stack
 echo "stack ALL=(ALL) NOPASSWD: ALL" | sudo tee /etc/sudoers.d/stack
-sudo su - stack
+cat << EOF | sudo su - stack
 git clone https://git.openstack.org/openstack-dev/devstack
 cd devstack
-cat << EOF > local.conf
-ADMIN_PASSWORD=opnfv
-DATABASE_PASSWORD=\$ADMIN_PASSWORD
-RABBIT_PASSWORD=\$ADMIN_PASSWORD
-SERVICE_PASSWORD=\$ADMIN_PASSWORD
-EOF
+export ADMIN_PASSWORD=opnfv
+export DATABASE_PASSWORD=\$ADMIN_PASSWORD
+export RABBIT_PASSWORD=\$ADMIN_PASSWORD
+export SERVICE_PASSWORD=\$ADMIN_PASSWORD
 ./stack.sh |& tee stack.log
+EOF
 
 sudo -i
 cat << EOF > ~/openrc
