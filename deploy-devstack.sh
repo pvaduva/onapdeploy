@@ -39,8 +39,7 @@ export SERVICE_PASSWORD=\$ADMIN_PASSWORD
 EOF
 
 echo "Create $HOME/openrc file required for openstack CLI"
-sudo -i
-cat << EOF > $HOME/openrc
+sudo -i cat << EOF > $HOME/openrc
 export OS_PROJECT_DOMAIN_NAME=default
 export OS_USER_DOMAIN_NAME=default
 export OS_PROJECT_NAME=admin
@@ -54,4 +53,4 @@ source $HOME/openrc
 
 echo "Configure OpenStack, install k8s and deploy ONAP"
 cd $DIRNAME
-./deploy-onap-openstack.sh
+sudo ./deploy-onap-openstack.sh
