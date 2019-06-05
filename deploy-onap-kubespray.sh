@@ -296,7 +296,7 @@ cd ../../
 
 echo "Waiting for ONAP deployments to be up \$(date)"
 function get_onap_deployments() {
-    sudo -i kubectl get deployments --namespace $NAMESPACE > $TMP_DEP_LIST 2> /dev/null
+    sudo -i kubectl get deployments --namespace $NAMESPACE | grep -v ' 0/0 ' | tail -n+2 > $TMP_DEP_LIST 2> /dev/null
     return \$(cat $TMP_DEP_LIST | wc -l)
 }
 FAILED_DEPS_LIMIT=0         # maximal number of failed ONAP deployemnts
