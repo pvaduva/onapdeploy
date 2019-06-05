@@ -14,13 +14,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Script for automated deployment of devstack at OPNFV LAAS environment
-#
+# Script for automated deployment of OpenStack via devstack at OPNFV LAAS
+# environment and installation of ONAP on top of OpenStack
 set -x
 
 export LC_ALL=C
 export LANG=$LC_ALL
 
+DIRNAME=$(dirname $0)
+
+echo "Install OpenStack via Devstack"
 sudo apt -y update
 sudo apt -y install git
 sudo useradd -s /bin/bash -d /opt/stack -m stack
@@ -35,8 +38,9 @@ export SERVICE_PASSWORD=\$ADMIN_PASSWORD
 ./stack.sh |& tee stack.log
 EOF
 
+echo "Create $HOME/openrc file required for openstack CLI"
 sudo -i
-cat << EOF > ~/openrc
+cat << EOF > $HOME/openrc
 export OS_PROJECT_DOMAIN_NAME=default
 export OS_USER_DOMAIN_NAME=default
 export OS_PROJECT_NAME=admin
@@ -46,4 +50,8 @@ export OS_AUTH_URL=http://localhost/identity/v3/
 export OS_IDENTITY_API_VERSION=3
 export OS_IMAGE_API_VERSION=2
 EOF
-source openrc
+source $HOME/openrc
+
+echo "Configure OpenStack, install k8s and deploy ONAP"
+cd $DIRNAME
+./deploy-onap-openstack.sh
