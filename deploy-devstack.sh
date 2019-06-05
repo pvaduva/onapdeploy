@@ -49,8 +49,7 @@ export OS_AUTH_URL=http://localhost/identity/v3/
 export OS_IDENTITY_API_VERSION=3
 export OS_IMAGE_API_VERSION=2
 EOF
-source $HOME/openrc
 
 echo "Configure OpenStack, install k8s and deploy ONAP"
 cd $DIRNAME
-sudo ./deploy-onap-openstack.sh
+sudo bash -c "source $HOME/openrc && ./deploy-onap-openstack.sh"
