@@ -251,10 +251,6 @@ sed -i '/persistence:/s/^#//' ./oom/kubernetes/aaf/charts/aaf-locate/values.yaml
 sed -i '/mountPath: \/dockerdata/c\    mountPath: \/dockerdata-nfs'\
  ./oom/kubernetes/aaf/charts/aaf-locate/values.yaml
 
-echo "Pre-pulling docker images at \$(date)"
-wget https://jira.onap.org/secure/attachment/11261/prepull_docker.sh
-chmod 777 prepull_docker.sh
-./prepull_docker.sh
 echo "starting onap deployments"
 cd kubernetes/
 
