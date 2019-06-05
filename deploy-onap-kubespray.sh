@@ -287,7 +287,7 @@ helm repo remove stable
 helm repo list
 cp -R helm/plugins/ ~/.helm
 make all
-if ( ! helm install local/onap -n dev --namespace $NAMESPACE) ; then
+if ( ! helm deploy dev local/onap --namespace $NAMESPACE) ; then
     echo "ONAP installation has failed at \$(date)"
     exit 1
 fi
