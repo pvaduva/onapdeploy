@@ -165,16 +165,24 @@ openstack security group rule create  --proto tcp \
 openstack security group rule create  --proto tcp \
     --dst-port 8879:8879 onap_security_group            # helm
 openstack security group rule create  --proto tcp \
+    --dst-port 2379:2379 onap_security_group           # k8s etcd
+openstack security group rule create  --proto tcp \
     --dst-port 80:80 onap_security_group
 openstack security group rule create  --proto tcp \
     --dst-port 443:443 onap_security_group
+openstack security group rule create  --proto tcp \
+    --dst-port 53:53 onap_security_group
+openstack security group rule create  --proto udp \
+    --dst-port 53:53 onap_security_group
 
 # Allow communication between k8s cluster nodes
-PUBLIC_NET=`openstack subnet list --name public-subnet -f value -c Subnet`
-openstack security group rule create --remote-ip $PUBLIC_NET --proto tcp \
-    --dst-port 1:65535 onap_security_group
-openstack security group rule create --remote-ip $PUBLIC_NET --proto udp \
-    --dst-port 1:65535 onap_security_group
+for SUBNET in public-subnet private-subnet onap_private_subnet ; do
+    SUBNET_CIDR=`openstack subnet list --name $SUBNET -f value -c Subnet`
+        openstack security group rule create --remote-ip $SUBNET_CIDR --proto tcp \
+            --dst-port 1:65535 onap_security_group
+        openstack security group rule create --remote-ip $SUBNET_CIDR --proto udp \
+            --dst-port 1:65535 onap_security_group
+done
 
 # Get list of hypervisors and their zone
 HOST_ZONE=$(openstack host list -f value | grep compute | head -n1 | cut -d' ' -f3)
