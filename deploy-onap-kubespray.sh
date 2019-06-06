@@ -110,7 +110,7 @@ EOL
 # Check if server IPs of kubernetes nodes are configured at given server.
 # If it is not the case, then kubespray invetory file must be updated.
 function check_server_ips() {
-    for SERVER_IP in $(grep '^ *ip: ' inventory/auto_hosts.yml | sed -re 's/^ *ip: ([0-9\.]+).*$/\1/') ; do
+    for SERVER_IP in $(grep '^ *ip: ' $1 | sed -re 's/^ *ip: ([0-9\.]+).*$/\1/') ; do
         IP_OK="false"
         for IP in $(ssh $SSH_OPTIONS $SSH_USER@$SERVER_IP "ip a | grep -Ew 'inet' | sed -re 's/^ *inet ([0-9\.]+).*$/\1/g'") ; do
             if [ "$IP" == "$SERVER_IP" ] ; then
@@ -176,11 +176,16 @@ cd kubespray
 git checkout $KUBESPRAY_VERSION
 pip3 install ansible==$ANSIBLE_VERSION
 pip3 install -r requirements.txt
-export CONFIG_FILE=inventory/auto_hosts.yml
+
+# prepare k8s cluster configuration
+cp -r inventory/sample inventory/k8s_cluster
+export CONFIG_FILE=inventory/k8s_cluster/hosts.yml
 rm $CONFIG_FILE
 python3 contrib/inventory_builder/inventory.py $SERVERS
 check_server_ips $CONFIG_FILE
 cat $CONFIG_FILE
+
+# install k8s cluster
 if ( ! ansible-playbook -i $CONFIG_FILE $KUBESPRAY_OPTIONS -b -u $SSH_USER $ANSIBLE_IDENTITY cluster.yml ) ; then
     echo "Kubespray installation has failed at $(date)"
     exit 1
