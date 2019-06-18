@@ -63,7 +63,7 @@ case "$ONAP_BRANCH" in
         ;;
 esac
 
-ONAP_MINIMAL="aaf aai cassandra dmaap log portal robot sdc sdnc so vid"
+ONAP_MINIMAL="aaf aai cassandra dmaap mariadb-galera log portal robot sdc sdnc so vid"
 # by defalult install minimal ONAP installation
 # empty list of ONAP_COMPONENT means full ONAP installation
 ONAP_COMPONENT=${ONAP_COMPONENT:-$ONAP_MINIMAL}
