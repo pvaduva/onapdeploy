@@ -203,6 +203,18 @@ echo "INSTALLATION TOPOLOGY:"
 echo "Kubernetes Master: $MASTER"
 echo "Kubernetes Nodes: $K8S_NODES"
 echo
+echo "CONFIGURING NFS ON MASTER"
+ssh $SSH_OPTIONS $SSH_USER@"$MASTER" "bash -s" <<OOMDEPLOY
+sudo su
+apt-get install -y nfs-kernel-server
+
+echo "Installing nfs server"
+mkdir -p /dockerdata-nfs
+chmod 777 /dockerdata-nfs
+echo "/dockerdata-nfs *(rw,no_root_squash,no_subtree_check)">>/etc/exports
+service nfs-kernel-server restart
+OOMDEPLOY
+
 echo "CONFIGURING NFS ON SLAVES"
 echo "$SLAVES"
 
@@ -226,6 +238,7 @@ echo "$MASTER"
 ssh $SSH_OPTIONS $SSH_USER@"$MASTER" "bash -s" <<OOMDEPLOY
 sudo su
 apt-get install -y make
+
 echo "create namespace '$NAMESPACE'"
 cat <<EOF | kubectl create -f -
 {
