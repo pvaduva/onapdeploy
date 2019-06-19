@@ -264,11 +264,6 @@ cd oom
 # AAI helm charts were moved to separate repository => init submodules
 git submodule update --init --recursive
 
-# NFS FIX for aaf-locate
-sed -i '/persistence:/s/^#//' ./oom/kubernetes/aaf/charts/aaf-locate/values.yaml
-sed -i '/mountPath: \/dockerdata/c\    mountPath: \/dockerdata-nfs'\
- ./oom/kubernetes/aaf/charts/aaf-locate/values.yaml
-
 echo "starting onap deployments"
 cd kubernetes/
 
