@@ -24,6 +24,8 @@ set -x
 export LC_ALL=C
 export LANG=$LC_ALL
 
+[ -z "$OS_AUTH_URL" ] && echo "ERROR: OpenStack environment variables are not set!" && exit 1
+
 # Configuration to be passed to ci/deploy-onap.sh
 export SSH_USER="ubuntu"
 export SSH_IDENTITY="/root/.ssh/onap_key"

@@ -267,18 +267,38 @@ git submodule update --init --recursive
 echo "starting onap deployments"
 cd kubernetes/
 
+ONAP_CFG='onap/values.yaml'
+ONAP_ENC_KEY="\$(cat so/resources/config/mso/encryption.key)"
+
 # Enable selected ONAP components
 if [ -n "$ONAP_COMPONENT" ] ; then
     # disable all components and enable only selected in next loop
-    sed -i '/^.*:$/!b;n;s/enabled: *true/enabled: false/' onap/values.yaml
+    sed -i '/^.*:$/!b;n;s/enabled: *true/enabled: false/' \${ONAP_CFG}
     echo -n "Enable following ONAP components:"
     for COMPONENT in $ONAP_COMPONENT; do
         echo -n " \$COMPONENT"
-        sed -i '/^'\${COMPONENT}':$/!b;n;s/enabled: *false/enabled: true/' onap/values.yaml
+        sed -i '/^'\${COMPONENT}':$/!b;n;s/enabled: *false/enabled: true/' \${ONAP_CFG}
     done
     echo
 else
     echo "All ONAP components will be installed"
+fi
+
+# Configure OpenStack details in onap/values.yaml
+if [ -f "\${ONAP_CFG}" -a -n "\${ONAP_ENC_KEY}" -a \
+     -n "$OS_USERNAME" -a -n "$OS_PASSWORD" -a \
+     -n "$OS_AUTH_URL" -a -n "$OS_PROJECT_NAME" -a \
+     -n "$OS_USER_DOMAIN_NAME" ] ; then
+    echo "Configure OpenStack details in \${ONAP_CFG}"
+    OS_PASSWORD_ENC=\$(echo -n "$OS_PASSWORD" | openssl aes-128-ecb -e -K \${ONAP_ENC_KEY} -nosalt | xxd -c 256 -ps)
+    sed -i "s|openStackKeyStoneUrl:.*$|openStackKeyStoneUrl: \"$OS_AUTH_URL\"|" \${ONAP_CFG}
+    sed -i "s|openStackServiceTenantName:.*$|openStackServiceTenantName: \"$OS_PROJECT_NAME\"|" \${ONAP_CFG}
+    sed -i "s|openStackDomain:.*$|openStackDomain: \"$OS_USER_DOMAIN_NAME\"|" \${ONAP_CFG}
+    sed -i "s|openStackUserName:.*$|openStackUserName: \"$OS_USERNAME\"|" \${ONAP_CFG}
+    sed -i "s|openStackEncryptedPassword:.*$|openStackEncryptedPassword: \"$OS_PASSWORD_ENC\"|" \${ONAP_CFG}
+    sed -i "s|openStackEncryptedPasswordHere:.*$|openStackEncryptedPasswordHere: \"$OS_PASSWORD_ENC\"|" \${ONAP_CFG}
+else
+    echo "WARNING: OpenStack details cannot be configured in \${ONAP_CFG}, because they are not available."
 fi
 
 wget http://storage.googleapis.com/kubernetes-helm\
