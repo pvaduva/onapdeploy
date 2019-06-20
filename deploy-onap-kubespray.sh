@@ -361,10 +361,12 @@ echo "========================"
 echo "ONAP INSTALLATION REPORT"
 echo "========================"
 echo
-echo "List of Failed deployments"
-echo "--------------------------"
-grep -E '0/|1/2' $TMP_DEP_LIST | tee ~/onap_failed_deployments.txt
-echo
+if [ \$PENDING -gt 0 ] ; then
+    echo "List of Failed deployments"
+    echo "--------------------------"
+    grep -E '0/|1/2' $TMP_DEP_LIST | tee ~/onap_failed_deployments.txt
+    echo
+fi
 echo "Summary:"
 echo "--------"
 echo "  Deployments Failed: \$(cat ~/onap_failed_deployments.txt  | wc -l)"
