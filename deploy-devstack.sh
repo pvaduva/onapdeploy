@@ -16,19 +16,22 @@
 
 # Script for automated deployment of OpenStack via devstack at OPNFV LAAS
 # environment and installation of ONAP on top of OpenStack
+# Script shall be executed via sudo or by root user.
 set -x
 
 export LC_ALL=C
 export LANG=$LC_ALL
 
-DIRNAME=$(dirname $0)
+# check that we are root and fail otherwise
+[ $USER != "root" ] && echo "ERROR: $0 must be executed via sudo or by root!" && exit 1
 
+DIRNAME=$(dirname $0)
 echo "Install OpenStack via Devstack"
-sudo apt -y update
-sudo apt -y install git
-sudo useradd -s /bin/bash -d /opt/stack -m stack
-echo "stack ALL=(ALL) NOPASSWD: ALL" | sudo tee /etc/sudoers.d/stack
-cat << EOF | sudo su - stack
+apt -y update
+apt -y install git
+useradd -s /bin/bash -d /opt/stack -m stack
+echo "stack ALL=(ALL) NOPASSWD: ALL" | tee /etc/sudoers.d/stack
+cat << EOF | su - stack
 git clone https://git.openstack.org/openstack-dev/devstack
 cd devstack
 export ADMIN_PASSWORD=opnfv
@@ -39,7 +42,7 @@ export SERVICE_PASSWORD=\$ADMIN_PASSWORD
 EOF
 
 echo "Create $HOME/openrc file required for openstack CLI"
-sudo -i cat << EOF > $HOME/openrc
+cat << EOF > $HOME/openrc
 export OS_PROJECT_DOMAIN_NAME=default
 export OS_USER_DOMAIN_NAME=default
 export OS_PROJECT_NAME=admin
@@ -52,4 +55,5 @@ EOF
 
 echo "Configure OpenStack, install k8s and deploy ONAP"
 cd $DIRNAME
-sudo bash -c "source $HOME/openrc && ./deploy-onap-openstack.sh"
+source $HOME/openrc
+./deploy-onap-openstack.sh
