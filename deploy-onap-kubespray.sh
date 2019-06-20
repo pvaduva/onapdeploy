@@ -295,8 +295,8 @@ if [ -f "\${ONAP_CFG}" -a -n "\${ONAP_ENC_KEY}" -a \
     sed -i "s|openStackServiceTenantName:.*$|openStackServiceTenantName: \"$OS_PROJECT_NAME\"|" \${ONAP_CFG}
     sed -i "s|openStackDomain:.*$|openStackDomain: \"$OS_USER_DOMAIN_NAME\"|" \${ONAP_CFG}
     sed -i "s|openStackUserName:.*$|openStackUserName: \"$OS_USERNAME\"|" \${ONAP_CFG}
-    sed -i "s|openStackEncryptedPassword:.*$|openStackEncryptedPassword: \"$OS_PASSWORD_ENC\"|" \${ONAP_CFG}
-    sed -i "s|openStackEncryptedPasswordHere:.*$|openStackEncryptedPasswordHere: \"$OS_PASSWORD_ENC\"|" \${ONAP_CFG}
+    sed -i "s|openStackEncryptedPassword:.*$|openStackEncryptedPassword: \"\${OS_PASSWORD_ENC}\"|" \${ONAP_CFG}
+    sed -i "s|openStackEncryptedPasswordHere:.*$|openStackEncryptedPasswordHere: \"\${OS_PASSWORD_ENC}\"|" \${ONAP_CFG}
 else
     echo "WARNING: OpenStack details cannot be configured in \${ONAP_CFG}, because they are not available."
 fi
