@@ -31,7 +31,7 @@ SERVERS=$*
 shift
 SLAVES=$*
 
-ONAP_BRANCH=${ONAP_BRANCH:-'master'}
+ONAP_BRANCH=${ONAP_BRANCH:-'dublin'}
 NAMESPACE='onap'
 SSH_USER=${SSH_USER:-"opnfv"}
 SSH_OPTIONS='-o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no'
