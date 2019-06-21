@@ -376,6 +376,7 @@ echo "ONAP health TC results"
 echo "----------------------"
 cd oom/kubernetes/robot
 ./ete-k8s.sh $NAMESPACE health | tee ~/onap_health.txt
+./ete-k8s.sh $NAMESPACE healthdist | tee ~/onap_healthdist.txt
 echo "==============================="
 echo "END OF ONAP INSTALLATION REPORT"
 echo "==============================="
