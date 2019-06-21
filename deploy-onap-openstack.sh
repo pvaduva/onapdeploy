@@ -48,7 +48,7 @@ CMP_MIN_MEM=${CMP_MIN_MEM:-$DEFAULT_CMP_MIN_MEM}    # MB RAM of the weakest comp
 CMP_MIN_CPUS=${CMP_MIN_CPUS:-$DEFAULT_CMP_MIN_CPUS} # CPU count of the weakest compute node
 # size of storage for instances
 CMP_STORAGE_TOTAL=${CMP_STORAGE_TOTAL:-$(($DEFAULT_CMP_MIN_STORAGE*$CMP_COUNT))}
-VM_COUNT=${VM_COUNT:-6}             # number of VMs available for k8s cluster
+VM_COUNT=${VM_COUNT:-1}             # number of VMs available for k8s cluster; singlenode by default
 
 #
 # Functions
