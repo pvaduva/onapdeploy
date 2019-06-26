@@ -191,6 +191,9 @@ if ( ! ansible-playbook -i $CONFIG_FILE $KUBESPRAY_OPTIONS -b -u $SSH_USER $ANSI
     exit 1
 fi
 
+# configure default namespace
+kubectl config set-context $(kubectl config current-context) --namespace=$NAMESPACE
+
 # use standalone K8S master if there are enough VMs available for the K8S cluster
 SERVERS_COUNT=$(echo $SERVERS | wc -w)
 if [ $SERVERS_COUNT -gt 2 ] ; then
