@@ -191,9 +191,6 @@ if ( ! ansible-playbook -i $CONFIG_FILE $KUBESPRAY_OPTIONS -b -u $SSH_USER $ANSI
     exit 1
 fi
 
-# configure default namespace
-kubectl config set-context $(kubectl config current-context) --namespace=$NAMESPACE
-
 # use standalone K8S master if there are enough VMs available for the K8S cluster
 SERVERS_COUNT=$(echo $SERVERS | wc -w)
 if [ $SERVERS_COUNT -gt 2 ] ; then
@@ -259,6 +256,9 @@ kubectl get namespaces --show-labels
 kubectl -n kube-system create sa tiller
 kubectl create clusterrolebinding tiller --clusterrole cluster-admin --serviceaccount=kube-system:tiller
 kubectl create clusterrolebinding default-admin --clusterrole cluster-admin --serviceaccount=$NAMESPACE:default
+
+# configure default namespace
+kubectl config set-context \$(kubectl config current-context) --namespace=$NAMESPACE
 
 rm -rf oom
 echo "pulling new oom"
