@@ -41,8 +41,6 @@ if [ -n "$SSH_IDENTITY" ] ; then
     ANSIBLE_IDENTITY="--private-key=$SSH_IDENTITY"
 fi
 
-KUBESPRAY_OPTIONS='-e "kubelet_max_pods=250"'
-
 TMP_DEP_LIST='/tmp/onap_pod_list.txt'
 
 case "$ONAP_BRANCH" in
@@ -177,6 +175,9 @@ git checkout $KUBESPRAY_VERSION
 pip3 install ansible==$ANSIBLE_VERSION
 pip3 install -r requirements.txt
 
+# increate max pods limit to 250
+sed -i "s/kubelet_max_pods: *110/kubelet_max_pods: 250/" roles/kubernetes/node/defaults/main.yml
+
 # prepare k8s cluster configuration
 cp -r inventory/sample inventory/k8s_cluster
 export CONFIG_FILE=inventory/k8s_cluster/hosts.yml
@@ -186,7 +187,7 @@ check_server_ips $CONFIG_FILE
 cat $CONFIG_FILE
 
 # install k8s cluster
-if ( ! ansible-playbook -i $CONFIG_FILE $KUBESPRAY_OPTIONS -b -u $SSH_USER $ANSIBLE_IDENTITY cluster.yml ) ; then
+if ( ! ansible-playbook -i $CONFIG_FILE -b -u $SSH_USER $ANSIBLE_IDENTITY cluster.yml ) ; then
     echo "Kubespray installation has failed at $(date)"
     exit 1
 fi
