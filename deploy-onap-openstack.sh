@@ -117,9 +117,9 @@ echo "Number of VMs:         VM_COUNT=$VM_COUNT"
 # Calculate VM parameters; there will be up to 1 VM per Compute node
 # to maximize resources available for VMs
 PER=85                      # % of compute resources will be consumed by VMs
-VM_DISK_MAX=100             # GB - max VM disk size
-VM_MEM_MAX=81920            # MB - max VM RAM size
-VM_CPUS_MAX=56              # max count of VM CPUs
+VM_DISK_MAX=300             # GB - max VM disk size
+VM_MEM_MAX=245760           # MB - max VM RAM size
+VM_CPUS_MAX=64              # max count of VM CPUs
 VM_MEM=$(minimum $(($CMP_MIN_MEM*$CMP_COUNT*$PER/100/$VM_COUNT)) $VM_MEM_MAX)
 VM_CPUS=$(minimum $(($CMP_MIN_CPUS*$CMP_COUNT*$PER/100/$VM_COUNT)) $VM_CPUS_MAX)
 VM_DISK=$(minimum $(($CMP_STORAGE_TOTAL*$PER/100/$VM_COUNT)) $VM_DISK_MAX)
