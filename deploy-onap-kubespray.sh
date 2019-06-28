@@ -175,8 +175,8 @@ git checkout $KUBESPRAY_VERSION
 pip3 install ansible==$ANSIBLE_VERSION
 pip3 install -r requirements.txt
 
-# increate max pods limit to 250
-sed -i "s/kubelet_max_pods: *110/kubelet_max_pods: 250/" roles/kubernetes/node/defaults/main.yml
+# increate max pods limit to 400
+sed -i "s/kubelet_max_pods: *110/kubelet_max_pods: 400/" roles/kubernetes/node/defaults/main.yml
 
 # prepare k8s cluster configuration
 cp -r inventory/sample inventory/k8s_cluster
