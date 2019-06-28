@@ -33,6 +33,7 @@ SLAVES=$*
 
 ONAP_BRANCH=${ONAP_BRANCH:-'dublin'}
 NAMESPACE='onap'
+DATE='date --rfc-3339=seconds'
 SSH_USER=${SSH_USER:-"opnfv"}
 SSH_OPTIONS='-o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no'
 # use identity file from the environment SSH_IDENTITY
@@ -188,7 +189,7 @@ cat $CONFIG_FILE
 
 # install k8s cluster
 if ( ! ansible-playbook -i $CONFIG_FILE -b -u $SSH_USER $ANSIBLE_IDENTITY cluster.yml ) ; then
-    echo "Kubespray installation has failed at $(date)"
+    echo "Kubespray installation has failed at $($DATE)"
     exit 1
 fi
 
@@ -312,7 +313,7 @@ mv linux-${ARCH}/helm /usr/local/bin/helm
 helm init --upgrade --service-account tiller
 # run helm server on the background and detached from current shell
 nohup helm serve  0<&- &>/dev/null &
-echo "Waiting for helm setup for 5 min at \$(date)"
+echo "Waiting for helm setup for 5 min at \$($DATE)"
 sleep 5m
 helm version
 helm repo add local http://127.0.0.1:8879
@@ -321,13 +322,13 @@ helm repo list
 cp -R helm/plugins/ ~/.helm
 make all
 if ( ! helm deploy dev local/onap --namespace $NAMESPACE) ; then
-    echo "ONAP installation has failed at \$(date)"
+    echo "ONAP installation has failed at \$($DATE)"
     exit 1
 fi
 
 cd ../../
 
-echo "Waiting for ONAP deployments to be up \$(date)"
+echo "Waiting for ONAP deployments to be up \$($DATE)"
 function get_onap_deployments() {
     sudo -i kubectl get deployments --namespace $NAMESPACE 2> /dev/null | grep -v ' 0/0 ' | tail -n+2 > $TMP_DEP_LIST
     return \$(cat $TMP_DEP_LIST | wc -l)
@@ -347,7 +348,7 @@ while [ \$PENDING -gt \$FAILED_DEPS_LIMIT -o \$ALL_DEPS -lt \$ALL_DEPS_LIMIT ]; 
     printf "%-3s %-29s %-3s/%s\n" "Nr." "Datetime of check" "Err" "Total DEPs"
   fi
   COUNTER=\$((\$COUNTER+1))
-  printf "%3s %-29s %3s/%-3s\n" \$COUNTER "\$(date)" \$PENDING \$ALL_DEPS
+  printf "%3s %-29s %3s/%-3s\n" \$COUNTER "\$($DATE)" \$PENDING \$ALL_DEPS
   sleep \$WAIT_PERIOD
   if [ "\$MAX_WAIT_PERIODS" -eq \$COUNTER ]; then
     FAILED_DEPS_LIMIT=800
@@ -386,5 +387,5 @@ echo "END OF ONAP INSTALLATION REPORT"
 echo "==============================="
 OOMDEPLOY
 
-echo "Finished install, ruturned from Master at $(date)"
+echo "Finished install, ruturned from Master at $($DATE)"
 exit 0

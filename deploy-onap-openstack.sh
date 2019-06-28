@@ -26,6 +26,8 @@ export LANG=$LC_ALL
 
 [ -z "$OS_AUTH_URL" ] && echo "ERROR: OpenStack environment variables are not set!" && exit 1
 
+DATE='date --rfc-3339=seconds'
+
 # Configuration to be passed to ci/deploy-onap.sh
 export SSH_USER="ubuntu"
 export SSH_IDENTITY="/root/.ssh/onap_key"
@@ -205,7 +207,7 @@ while [ $VM_ITER -le $VM_COUNT ] ; do
         --availability-zone ${HOST_ZONE}:${HOST_NAME[$HOST_ITER]}
     sleep 10 # wait for VM init before floating IP can be assigned
     openstack server add floating ip ${VM_NAME[$VM_ITER]} ${VM_IP[$VM_ITER]}
-    echo "Waiting for ${VM_NAME[$VM_ITER]} to start up for 1m at $(date)"
+    echo "Waiting for ${VM_NAME[$VM_ITER]} to start up for 1m at $($DATE)"
     sleep 1m
     VM_ITER=$(($VM_ITER+1))
     HOST_ITER=$(($HOST_ITER+1))
@@ -233,7 +235,7 @@ while [ $COUNTER -le 10 ] ; do
     if [ $VM_UP -eq $VM_COUNT ] ; then
         break
     fi
-    echo "Waiting for VMs to be accessible via ssh for 2m at $(date)"
+    echo "Waiting for VMs to be accessible via ssh for 2m at $($DATE)"
     sleep 2m
 done
 
@@ -245,8 +247,8 @@ if [ $VM_UP -ne $VM_COUNT ] ; then
 fi
 
 # Start ONAP installation
-DATE_START=$(date)
+DATE_START=$($DATE)
 echo -e "\nONAP Installation Started at $DATE_START\n"
 $SCRIPT_DIR/deploy-onap-kubespray.sh ${VM_IP[@]}
 echo -e "\nONAP Installation Started at $DATE_START"
-echo -e "ONAP Installation Finished at $(date)\n"
+echo -e "ONAP Installation Finished at $($DATE)\n"
