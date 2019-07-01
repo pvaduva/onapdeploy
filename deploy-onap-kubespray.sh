@@ -44,6 +44,7 @@ fi
 
 TMP_DEP_LIST='/tmp/onap_pod_list.txt'
 
+HELM_TIMEOUT=1800
 case "$ONAP_BRANCH" in
     "beijing")
         HELM_VERSION=2.8.2
@@ -321,7 +322,7 @@ helm repo remove stable
 helm repo list
 cp -R helm/plugins/ ~/.helm
 make all
-if ( ! helm deploy dev local/onap --namespace $NAMESPACE) ; then
+if ( ! helm deploy dev local/onap --namespace $NAMESPACE --timeout $HELM_TIMEOUT) ; then
     echo "ONAP installation has failed at \$($DATE)"
     exit 1
 fi
