@@ -342,7 +342,7 @@ MAX_WAIT_PERIODS=\$((\$MAX_WAIT_TIME/\$WAIT_PERIOD))
 COUNTER=0
 get_onap_deployments
 ALL_DEPS=\$?
-PENDING=\$(grep -E '0/|1/2' $TMP_DEP_LIST | wc -l)
+PENDING=\$(grep -E '0/|1/2|1/3|2/3' $TMP_DEP_LIST | wc -l)
 while [ \$PENDING -gt \$FAILED_DEPS_LIMIT -o \$ALL_DEPS -lt \$ALL_DEPS_LIMIT ]; do
   # print header every 20th line
   if [ \$COUNTER -eq \$((\$COUNTER/20*20)) ] ; then
@@ -367,15 +367,17 @@ echo "========================"
 echo "ONAP INSTALLATION REPORT"
 echo "========================"
 echo
+FAILED_DEPS=0
 if [ \$PENDING -gt 0 ] ; then
     echo "List of Failed deployments"
     echo "--------------------------"
-    grep -E '0/|1/2' $TMP_DEP_LIST | tee ~/onap_failed_deployments.txt
+    grep -E '0/|1/2|1/3|2/3' $TMP_DEP_LIST | tee ~/onap_failed_deployments.txt
+    FAILED_DEPS=\$(cat ~/onap_failed_deployments.txt  | wc -l)
     echo
 fi
 echo "Summary:"
 echo "--------"
-echo "  Deployments Failed: \$(cat ~/onap_failed_deployments.txt  | wc -l)"
+echo "  Deployments Failed: \$FAILED_DEPS"
 echo "  Deployments Total:  \$(cat ~/onap_all_deployments.txt  | wc -l)"
 echo
 echo "ONAP health TC results"
