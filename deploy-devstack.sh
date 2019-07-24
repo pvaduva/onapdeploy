@@ -34,12 +34,18 @@ echo "stack ALL=(ALL) NOPASSWD: ALL" | tee /etc/sudoers.d/stack
 cat << EOF | su - stack
 git clone https://git.openstack.org/openstack-dev/devstack
 cd devstack
+sed -i 's/pyparsing===2.4.1/pyparsing===2.4.0/' /opt/stack/requirements/upper-constraints.txt
 export ADMIN_PASSWORD=opnfv
 export DATABASE_PASSWORD=\$ADMIN_PASSWORD
 export RABBIT_PASSWORD=\$ADMIN_PASSWORD
 export SERVICE_PASSWORD=\$ADMIN_PASSWORD
 ./stack.sh |& tee stack.log
 EOF
+
+if ! which openstack ; then
+    echo "DevStack installation has failed!"
+    exit 1
+fi
 
 echo "Create $HOME/openrc file required for openstack CLI"
 cat << EOF > $HOME/openrc
