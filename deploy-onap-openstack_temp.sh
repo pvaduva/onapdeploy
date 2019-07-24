@@ -92,7 +92,7 @@ function remove_openstack_setup(){
     openstack router delete onap_router
     openstack subnet delete onap_private_subnet
     openstack network delete onap_private_network
-    openstack image delete xenial
+#    openstack image delete xenial
     rm -rf $IMAGE_DIR
     openstack keypair delete onap_key
     rm $SSH_IDENTITY
@@ -140,10 +140,10 @@ openstack keypair create onap_key > $SSH_IDENTITY
 chmod 600 $SSH_IDENTITY
 
 # Download and import VM image(s)
-mkdir $IMAGE_DIR
-wget -P $IMAGE_DIR https://cloud-images.ubuntu.com/xenial/current/xenial-server-cloudimg-arm64-uefi1.img
-openstack image create --disk-format qcow2 --container-format bare --public \
-    --file $IMAGE_DIR/xenial-server-cloudimg-arm64-uefi1.img xenial
+#mkdir $IMAGE_DIR
+#wget -P $IMAGE_DIR https://cloud-images.ubuntu.com/xenial/current/xenial-server-cloudimg-arm64-uefi1.img
+#openstack image create --disk-format qcow2 --container-format bare --public \
+#    --file $IMAGE_DIR/xenial-server-cloudimg-arm64-uefi1.img xenial
 
 # Modify quotas (add 10% to required VM resources)
 openstack quota set --ram $(($VM_MEM*$VM_COUNT*110/100)) admin

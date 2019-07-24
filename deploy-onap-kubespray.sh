@@ -179,6 +179,7 @@ pip3 install -r requirements.txt
 
 # increate max pods limit to 400
 sed -i "s/kubelet_max_pods: *110/kubelet_max_pods: 400/" roles/kubernetes/node/defaults/main.yml
+sed -i "s/odelocaldns_image_repo: \"k8s.gcr.io/k8s-dns-node-cache\"/nodelocaldns_image_repo: \"onapmulti/k8s-dns-node-cache-arm64\"" roles/download/defaults/main.yml
 
 # prepare k8s cluster configuration
 cp -r inventory/sample inventory/k8s_cluster
@@ -311,7 +312,7 @@ wget http://storage.googleapis.com/kubernetes-helm\
 /helm-v${HELM_VERSION}-linux-${ARCH}.tar.gz
 tar -zxvf helm-v${HELM_VERSION}-linux-${ARCH}.tar.gz
 mv linux-${ARCH}/helm /usr/local/bin/helm
-helm init --upgrade --service-account tiller
+helm init --tiller-image onapmulti/tiller:latest --upgrade --service-account tiller
 # run helm server on the background and detached from current shell
 nohup helm serve  0<&- &>/dev/null &
 echo "Waiting for helm setup for 5 min at \$($DATE)"
